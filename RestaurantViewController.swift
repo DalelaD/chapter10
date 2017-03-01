@@ -37,6 +37,7 @@ class RestaurantViewController: UITableViewController {
             self.present(alertMessage, animated: true, completion: nil)
         }
         
+        
         let callAction = UIAlertAction(title: "Call " + "123-000-\(indexPath.row)", style: .default, handler: callActionHandler)
         
             optionMenu.addAction(callAction)
@@ -60,6 +61,75 @@ class RestaurantViewController: UITableViewController {
         present(optionMenu, animated: true, completion: nil)
     }
     
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete {
+        
+            restaurantNames.remove(at: indexPath.row)
+            restaurantLocations.remove(at: indexPath.row)
+            restaurantTypes.remove(at: indexPath.row)
+            restaurantIsVisited.remove(at: indexPath.row)
+            restaurantImages.remove(at: indexPath.row)
+        }
+        
+        tableView.reloadData()
+        
+        print("Total item: \(restaurantNames.count)")
+        for name in restaurantNames {
+            print(name)
+        }
+    }
+    
+    
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        
+        // Social Button
+        let shareAction = UITableViewRowAction(style: UITableViewRowActionStyle.default, title: "Share", handler: { (action, indexPath) -> Void in
+            
+            let defaultText = "Just checking in at " + self.restaurantNames[indexPath.row]
+            
+            if let imageToShare = UIImage(named: self.restaurantImages[indexPath.row]) {
+                
+                let activityController = UIActivityViewController(activityItems: [defaultText, imageToShare], applicationActivities: nil)
+                
+                self.present(activityController, animated: true, completion: nil)
+            }
+            
+            let activityController = UIActivityViewController(activityItems: [defaultText], applicationActivities: nil)
+            
+            self.present(activityController, animated: true, completion: nil)
+        })
+        
+        
+        
+        // Delete button
+        let deleteAction = UITableViewRowAction(style: UITableViewRowActionStyle.default, title: "Delete",handler: { (action, indexPath) -> Void in
+            
+            
+            self.restaurantNames.remove(at: indexPath.row)
+            
+            self.restaurantLocations.remove(at: indexPath.row)
+            
+            self.restaurantTypes.remove(at: indexPath.row)
+            
+            self.restaurantIsVisited.remove(at: indexPath.row)
+            
+            self.restaurantImages.remove(at: indexPath.row)
+            
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            
+        })
+        
+        shareAction.backgroundColor = UIColor(red: 48.0/255.0, green: 173.0/255.0, blue: 99.0/255.0, alpha: 1.0)
+        deleteAction.backgroundColor = UIColor(red: 202.0/255.0, green: 202.0/255.0, blue: 203.0/255.0, alpha: 1.0)
+        
+        return [deleteAction, shareAction]
+    }
+    
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cellIdentifier = "Cell"
@@ -76,7 +146,9 @@ class RestaurantViewController: UITableViewController {
         
         if restaurantIsVisited[indexPath.row] {
             cell.accessoryType = .checkmark
+            
         } else {
+            
             cell.accessoryType = .none
         }
         
